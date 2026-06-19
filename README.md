@@ -1,26 +1,26 @@
-# ESM2Fitness — Species-Adapted Zero-Shot polyQ Fitness Prediction (Balanced)
+# PolyQ — Species-Adapted Sequence Scoring for polyQ Analysis
 
-This repository contains code and data for **species-adapted polyQ fitness scoring**
-using the ESM2-650M protein language model, as presented in the collaborative
-study with Fudan University (FDU).
+This repository contains code and data for **species-adapted polyQ sequence scoring**
+using protein language models (ESM2-650M), combined with supporting DNA/protein
+sequence analysis pipelines.
 
 ## Overview
 
-The ESM2-650M base model is fine-tuned on individual species proteomes
-(*Chlamydomonas reinhardtii*, *Oryza sativa*, *Homo sapiens*) via masked
-language modeling (MLM), producing species-adapted variants. These models
-are then used to score polyQ-containing sequences, measuring how well each
-sequence fits the endogenous proteome landscape of each species.
+A pretrained ESM2-650M protein language model is fine-tuned on individual species
+proteomes (*Chlamydomonas reinhardtii*, *Oryza sativa*, *Homo sapiens*) via masked
+language modeling (MLM), producing species-adapted variants. These models are then
+used to score polyQ-containing sequences, measuring how well each sequence fits the
+endogenous proteome landscape of each species.
 
-**Key result**: Species-adapted models exhibit maximum divergence from the
-base ESM2 model in the intermediate polyQ range Q≈20–32, identifying this
-as a transition zone where species-specific proteome context most sensitively
-modulates sequence likelihood.
+**Key result**: Species-adapted models exhibit maximum divergence from the base
+ESM2 model in the intermediate polyQ range Q≈20–32, identifying this as a
+transition zone where species-specific proteome context most sensitively modulates
+sequence likelihood.
 
 ## Repository Structure
 
 ```
-ESM2Fitness_balanced/
+PolyQ/
 ├── README.md                          # This file
 ├── data/
 │   ├── training/                      # Proteome data for MLM fine-tuning
@@ -42,6 +42,7 @@ ESM2Fitness_balanced/
 │   ├── run_train_balanced.sh          # Training launch script
 │   ├── run_fitness_balanced.sh        # Inference launch script
 │   ├── accelerate_config.yaml         # DDP configuration (4-GPU)
+│   ├── convert_fasta.py               # FASTA to JSONL conversion
 │   └── env_check.sh                   # Environment verification
 ├── analysis/                          # Downstream analysis & visualization
 │   ├── generate_report_balanced.py    # Full report + all figures
@@ -64,7 +65,7 @@ ESM2Fitness_balanced/
 
 ## Models
 
-Five models are compared:
+Five models are compared in the protein scoring pipeline:
 
 | # | Model | Training Data | Epochs | Total Samples |
 |---|-------|--------------|--------|---------------|
@@ -164,8 +165,3 @@ that species' endogenous proteome landscape.
 
 Lin, Z. *et al.* Evolutionary-scale prediction of atomic-level protein
 structure with a language model. *Science* **379**, 1123–1130 (2023).
-
-## License
-
-This repository is shared for collaborative research purposes with Fudan University.
-Please contact the authors before redistribution.
