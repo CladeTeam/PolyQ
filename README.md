@@ -1,26 +1,29 @@
-# PolyQ — Sequence Analysis Repository
+# PolyQ — Multi-Modal Sequence Analysis
 
-This repository contains pipelines for polyQ-related sequence analysis, organized into
-two modules:
+This repository contains code, data, and analysis pipelines for polyQ-related
+sequence studies across two modalities:
 
-## Repository Structure
+| Directory | Content | Status |
+|-----------|---------|--------|
+| `AA_Sequence/` | Protein-level polyQ scoring using species-adapted ESM2-650M | ✅ Ready |
+| `DNA/` | DNA-level sequence analysis | 🚧 Placeholder |
 
-```
-PolyQ/
-├── AA_Sequence/          # Protein language model (ESM2) based analysis ← current
-│   ├── scripts/          # Training & inference scripts
-│   ├── data/             # Proteome data, query sequences, results
-│   ├── analysis/         # Report generation & figure legends
-│   └── figures/          # Generated figures
-├── DNA/                  # DNA-level sequence analysis ← coming soon
-└── README.md
-```
+See each subdirectory for details.
 
-## AA_Sequence — Species-Adapted polyQ Scoring
+## AA_Sequence — Species-Adapted polyQ Fitness Prediction
 
-Species-adapted polyQ sequence scoring using the ESM2-650M protein language model.
-See [AA_Sequence/](AA_Sequence/) for details.
+The ESM2-650M base model is fine-tuned on individual species proteomes
+(*Chlamydomonas reinhardtii*, *Oryza sativa*, *Homo sapiens*) via masked
+language modeling (MLM), producing species-adapted variants. These models
+score polyQ-containing sequences, measuring how well each sequence fits the
+endogenous proteome landscape of each species.
 
-## DNA — To Be Added
+**Key result**: Species-adapted models exhibit maximum divergence from the
+base ESM2 model in the intermediate polyQ range Q≈20–32.
 
-DNA-level analysis pipeline will be added by collaborators.
+See [`AA_Sequence/README.md`](AA_Sequence/README.md) for details on setup, training, and inference.
+
+## Reference
+
+Lin, Z. *et al.* Evolutionary-scale prediction of atomic-level protein
+structure with a language model. *Science* **379**, 1123–1130 (2023).
