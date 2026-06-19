@@ -1,0 +1,33 @@
+{
+  "total_species": 3,
+  "total_sequences": 307645,
+  "per_species": {
+    "human": {
+      "species": "human",
+      "species_name": "Homo sapiens",
+      "sequences": 245535,
+      "total_aa": 116853147,
+      "mean_length": 476,
+      "min_length": 1,
+      "max_length": 35991
+    },
+    "rice": {
+      "species": "rice",
+      "species_name": "Oryza sativa",
+      "sequences": 42582,
+      "total_aa": 14197868,
+      "mean_length": 333,
+      "min_length": 2,
+      "max_length": 5342
+    },
+    "chlamydomonas": {
+      "species": "chlamydomonas",
+      "species_name": "Chlamydomonas reinhardtii",
+      "sequences": 19528,
+      "total_aa": 14375500,
+      "mean_length": 736,
+      "min_length": 54,
+      "max_length": 23859
+    }
+  }
+}
