@@ -6,7 +6,7 @@ sequence studies across two modalities:
 | Directory | Content | Status |
 |-----------|---------|--------|
 | `AA_Sequence/` | Protein-level polyQ scoring using species-adapted ESM2-650M | ✅ Ready |
-| `DNA/` | DNA-level sequence analysis | 🚧 Placeholder |
+| `DNA/` | DNA CDS-level analysis with CENO models | ✅ Models ready |
 
 See each subdirectory for details.
 
@@ -22,6 +22,30 @@ endogenous proteome landscape of each species.
 base ESM2 model in the intermediate polyQ range Q≈20–32.
 
 See [`AA_Sequence/README.md`](AA_Sequence/README.md) for details on setup, training, and inference.
+
+## DNA — CENO CDS-Level Sequence Analysis
+
+CENO (Codon-Enhanced Nucleotide Optimizer) models for DNA coding sequence (CDS)
+analysis, fine-tuned on *Chlamydomonas reinhardtii* and *Oryza sativa* CDS data.
+
+| Model | HF Repo |
+|-------|---------|
+| CENO-chlamydomonas-cds | `CladeTeam/CENO-chlamydomonas-cds` |
+| CENO-rice-cds | `CladeTeam/CENO-rice-cds` |
+
+```bash
+# Download DNA models
+huggingface-cli download CladeTeam/CENO-rice-cds \
+    --local-dir models/dna/ceno-rice-cds \
+    --local-dir-use-symlinks False
+huggingface-cli download CladeTeam/CENO-chlamydomonas-cds \
+    --local-dir models/dna/ceno-chlamydomonas-cds \
+    --local-dir-use-symlinks False
+```
+
+See [`DNA/`](DNA/) for detailed documentation.
+
+**HuggingFace Collection** (all models): https://huggingface.co/collections/CladeTeam/polyq
 
 ## Reference
 
