@@ -1,0 +1,17 @@
+{
+  "description": "Rice-finetuned model scored on synthetic human HTT exon1 pure-CAG sequence.",
+  "sequence": "synthetic_htt_pure_cag",
+  "pretrained_model": "path/to/pretrained_model",
+  "finetuned_model": "path/to/finetuned_rice/best_model",
+  "model_code_dir": "path/to/ceno_code",
+  "q_min": 10,
+  "q_max": 72,
+  "outputs": {
+    "delta_csv": "outputs/rice_synthetic_htt_pure_cag_q_delta.csv",
+    "details_csv": "outputs/rice_synthetic_htt_pure_cag_scores.csv",
+    "sequences_fasta": "outputs/rice_synthetic_htt_pure_cag_sequences.fa",
+    "delta_png": "outputs/rice_synthetic_htt_pure_cag_delta.png",
+    "raw_png": "outputs/rice_synthetic_htt_pure_cag_raw_scores.png"
+  }
+}
+

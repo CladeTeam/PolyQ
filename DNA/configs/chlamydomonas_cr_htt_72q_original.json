@@ -1,0 +1,17 @@
+{
+  "description": "Chlamydomonas-finetuned model scored on Cr_HTT 72Q original CAG/CAA sequence truncated from the polyQ end.",
+  "sequence": "cr_htt_72q_original",
+  "pretrained_model": "path/to/pretrained_model",
+  "finetuned_model": "path/to/finetuned_chlamydomonas/best_model",
+  "model_code_dir": "path/to/ceno_code",
+  "q_min": 10,
+  "q_max": 72,
+  "outputs": {
+    "delta_csv": "outputs/chlamydomonas_cr_htt_72q_original_q_delta.csv",
+    "details_csv": "outputs/chlamydomonas_cr_htt_72q_original_scores.csv",
+    "sequences_fasta": "outputs/chlamydomonas_cr_htt_72q_original_sequences.fa",
+    "delta_png": "outputs/chlamydomonas_cr_htt_72q_original_delta.png",
+    "raw_png": "outputs/chlamydomonas_cr_htt_72q_original_raw_scores.png"
+  }
+}
+
