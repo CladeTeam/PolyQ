@@ -58,7 +58,6 @@ models/
 ├── human/                         # Human proteome (train yourself)
 ├── rice_balanced/                 # CladeTeam/polyq-esm2-rice-balanced
 ├── chlamydomonas_balanced/        # CladeTeam/polyq-esm2-chlamy-balanced
-└── dna/                           # DNA CDS models (see PolyQ/DNA/)
 ```
 
 ### Step 1: Base ESM2-650M
