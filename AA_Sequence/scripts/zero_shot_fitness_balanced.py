@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Zero-Shot Fitness — 5-Model Comparison (Balanced Epochs)
-(base + merged + human + rice_balanced + chlamydomonas_balanced)
+Zero-Shot Fitness — 5-Model Comparison
+(base + merged + human + rice + chlamydomonas)
 
-Same logic as zero_shot_fitness_multi.py, but rice and chlamydomonas use
-epoch-balanced models (16 and 44 epochs respectively).
+Species-adapted ESM2 models fine-tuned on individual proteomes (3 epochs each).
+Scores polyQ sequences against all 5 models, outputting per-position and
+per-sequence fitness metrics.
 
 Output to results/ directory.
 
@@ -92,7 +93,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_dir", required=True,
                         help="Directory containing model subdirectories: base, merged, human, "
-                             "rice_balanced, chlamydomonas_balanced")
+                             "rice, chlamydomonas")
     parser.add_argument("--query_file", default="data/query/HTT_72Q.json",
                         help="Path to HTT-72Q query JSON")
     parser.add_argument("--output_dir", default="results",
@@ -111,7 +112,7 @@ def main():
     q_lengths = sorted(set(range(args.q_min, args.q_max + 1, args.q_step)) | {args.q_max})
 
     # ── Build model paths ──────────────────────────────────────────
-    MODEL_NAMES = ["base", "merged", "human", "rice_balanced", "chlamydomonas_balanced"]
+    MODEL_NAMES = ["base", "merged", "human", "rice", "chlamydomonas"]
     MODEL_PATHS = {}
     for name in MODEL_NAMES:
         path = os.path.join(args.model_dir, name)

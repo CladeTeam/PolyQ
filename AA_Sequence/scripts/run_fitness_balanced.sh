@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
-# 5-Model polyQ Fitness Comparison (Balanced) — 1-GPU Launch Script
-#   (base + merged + human + rice_balanced + chlamydomonas_balanced)
+# 5-Model polyQ Fitness Comparison — 1-GPU Launch Script
+#   (base + merged + human + rice + chlamydomonas)
 # =============================================================================
 # Usage:
 #   MODEL_DIR=/path/to/models \
@@ -27,7 +27,7 @@ mkdir -p "${PROJECT_DIR}/logs" "${OUTPUT_DIR}"
 
 # ── Env check ──
 echo "================================================================"
-echo "5-Model polyQ Fitness Comparison (Balanced Epochs)"
+echo "5-Model polyQ Fitness Comparison"
 echo "================================================================"
 echo "Started: $(date)"
 echo ""
@@ -38,7 +38,7 @@ echo ""
 
 echo "--- Check models ---"
 ALL_OK=true
-for m in base merged human rice_balanced chlamydomonas_balanced; do
+for m in base merged human rice chlamydomonas; do
     p="${MODEL_DIR}/${m}"
     if [ -d "$p" ]; then
         echo "  ✓ $m"

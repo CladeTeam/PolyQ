@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-ESM2 polyQ Log-Likelihood Report — Balanced Epochs Edition
-==========================================================
-Compares 5 models (base + merged + human + rice_balanced + chlamydomonas_balanced)
+ESM2 polyQ Log-Likelihood Report
+================================
+Compares 5 models (base + merged + human + rice + chlamydomonas)
 on polyQ 10–72 logP(ref).
 
-rice_balanced: 16 epochs (vs original 3), chlamydomonas_balanced: 44 epochs (vs original 3),
-so all three species see ~670K training samples.
+All species-adapted models are fine-tuned for 3 epochs each on their
+respective proteomes.
 
 Usage:
     python analysis/generate_report_balanced.py \
@@ -52,20 +52,20 @@ def main():
                          "font.size": 11, "axes.titlesize": 13, "axes.labelsize": 12, "legend.fontsize": 8})
 
     # ── Model config ────────────────────────────────────────────────────
-    M = ["base", "merged", "human", "rice_balanced", "chlamydomonas_balanced"]
+    M = ["base", "merged", "human", "rice", "chlamydomonas"]
     MC = {
         "base": "#2c7bb6",
         "merged": "#d7191c",
         "human": "#fdae61",
-        "rice_balanced": "#1b9e77",
-        "chlamydomonas_balanced": "#9467bd",
+        "rice": "#1b9e77",
+        "chlamydomonas": "#9467bd",
     }
     ML = {
         "base": "Base (ESM2-650M)",
         "merged": "Merged (3-sp, 3ep)",
         "human": "Human (3ep)",
-        "rice_balanced": "Rice (16ep, balanced)",
-        "chlamydomonas_balanced": "Chlamy (44ep, balanced)",
+        "rice": "Rice (3ep)",
+        "chlamydomonas": "Chlamy (3ep)",
     }
     NL = 17  # N-terminal length
 
@@ -141,7 +141,7 @@ def main():
         ya = s["mean_pll"]; pd_ = (ya.max() - ya.min()) * 0.1
         ax1.set_ylim(ya.min() - pd_, ya.max() + pd_)
         ax1.set_xlabel("PolyQ Length"); ax1.set_ylabel("Mean logP (ref AA)")
-        ax1.set_title("PolyQ Length vs Mean logP of Reference AA (5 Models, Balanced Epochs)")
+        ax1.set_title("PolyQ Length vs Mean logP of Reference AA (5 Models, 3-Epoch Species-Adapted)")
         ax1.legend(ncol=3, fontsize=7, loc="lower right")
         q72 = s[s["q_length"] == 72].sort_values("mean_pll", ascending=False)
         lines = ["Q=72 rank:"]
@@ -151,7 +151,7 @@ def main():
                  ha="left", va="top", fontsize=7, family="monospace",
                  bbox=dict(boxstyle="round", facecolor="white", alpha=0.85))
         # Delta subplot
-        for m in ["merged", "human", "rice_balanced", "chlamydomonas_balanced"]:
+        for m in ["merged", "human", "rice", "chlamydomonas"]:
             sub = s[s["model"] == m]
             if sub.empty: continue
             delta = sub["mean_pll"].values - base["mean_pll"].values
@@ -203,7 +203,7 @@ def main():
         ax.set_xlabel("PolyQ Length", fontsize=12)
         ax.set_ylabel("Delta logP(ref) from Base Model", fontsize=12)
         ax.set_title("Fine-tuned Model Deviation from Base ESM2 (5-pt smoothed)\n"
-                     "Shaded: Q≈20–32 max divergence region — Balanced Epochs",
+                     "Shaded: Q≈20–32 max divergence region — 3-Epoch Species-Adapted",
                      fontsize=13, fontweight="bold")
         ax.legend(ncol=2, fontsize=8.5, loc="lower right")
         ax.set_xlim(8, 74)
@@ -229,7 +229,7 @@ def main():
             ax.set_xticklabels([ML[m] for m in present], rotation=30, fontsize=6.5, ha="right")
             ax.set_title(reg); ax.axhline(0, color="gray", linestyle=":", linewidth=0.8)
             if ai == 0: ax.set_ylabel("Per-Position logP (ref AA)")
-        fig.suptitle("Per-Region logP of Reference AA by Model (Q=72, Balanced)", fontsize=14, fontweight="bold")
+        fig.suptitle("Per-Region logP of Reference AA by Model (Q=72)", fontsize=14, fontweight="bold")
         fig.tight_layout(); fig.savefig(FDIR / "fig02_region_boxplot.png"); plt.close(fig)
 
     # ═══ FIG 3: Correlation heatmap ═════════════════════════════════════
@@ -239,7 +239,7 @@ def main():
         mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
         sns.heatmap(corr, annot=True, fmt=".4f", cmap="RdBu_r", vmin=0.99, vmax=1.0,
                     mask=mask, square=True, linewidths=0.5, cbar_kws={"shrink": 0.8}, ax=ax)
-        ax.set_title("5-Model Correlation (mean logP of ref AA) — Balanced")
+        ax.set_title("5-Model Correlation (mean logP of ref AA)")
         fig.tight_layout(); fig.savefig(FDIR / "fig03_correlation.png"); plt.close(fig)
 
     # ═══ FIG 4: polyQ vs Natural Distribution ══════════════════════════
@@ -302,7 +302,7 @@ def main():
             ax.set_title(reg, fontsize=11); ax.set_xlabel("PolyQ Length")
             if ai == 0: ax.set_ylabel("Mean logP (ref AA)")
             if ai == 2: ax.legend(ncol=2, fontsize=6, loc="lower right")
-        fig.suptitle("Per-Region logP of Reference AA across Q Lengths (5 Models, Balanced)",
+        fig.suptitle("Per-Region logP of Reference AA across Q Lengths (5 Models)",
                      fontsize=14, fontweight="bold")
         fig.tight_layout(); fig.savefig(FDIR / "fig05_region_trends.png"); plt.close(fig)
 
@@ -312,7 +312,7 @@ def main():
         df["region"] = df.apply(lambda r: region(r["position"], r["q_length"]), axis=1)
         pm = df.groupby(["model", "q_length", "region", "position"])["pll"].first().reset_index()
         pm = pm.groupby(["model", "q_length", "region"])["pll"].mean().reset_index()
-        ft = [m for m in ["merged", "human", "rice_balanced", "chlamydomonas_balanced"] if m in pm["model"].values]
+        ft = [m for m in ["merged", "human", "rice", "chlamydomonas"] if m in pm["model"].values]
         regs = ["N-terminal", "polyQ tract", "C-terminal"]
         if not ft: return
         fig, axes = plt.subplots(1, len(ft), figsize=(4.5 * len(ft), 5), sharey=True)
@@ -331,7 +331,7 @@ def main():
             ax.set_xlabel("PolyQ Length"); ax.set_title(ML.get(model, model), fontsize=9)
             if ai == 0: ax.set_ylabel("Region")
             if ai == len(ft) - 1: plt.colorbar(im, ax=ax, shrink=0.85, pad=0.02).set_label("Delta logP from Base", fontsize=8)
-        fig.suptitle("Delta logP(ref) from Base: Per-Region across Q Lengths (Balanced)",
+        fig.suptitle("Delta logP(ref) from Base: Per-Region across Q Lengths",
                      fontsize=13, fontweight="bold")
         fig.tight_layout(); fig.savefig(FDIR / "fig06_delta_heatmap.png"); plt.close(fig)
 
@@ -479,7 +479,7 @@ def main():
                                     label=f"{nm} P95"))
         ax.legend(handles=leg_lines, fontsize=7.5, loc="lower right", frameon=True, ncol=2)
         ax.set_xlabel("PolyQ Length"); ax.set_ylabel("Mean logP (ref AA)")
-        ax.set_title("PolyQ logP(ref) vs Natural Protein Reference Levels (3 Species, Balanced Models)")
+        ax.set_title("PolyQ logP(ref) vs Natural Protein Reference Levels (3 Species)")
         base_sub = s[s["model"] == "base"]
         q72v_row = base_sub[base_sub["q_length"] == 72]
         if not q72v_row.empty:
@@ -536,12 +536,12 @@ def main():
         # Compare old vs new for rice and chlamy at Q=72
         old_rice_q72_pll = -0.83134
         old_chlamy_q72_pll = -0.82723
-        new_rice_q72_row = s[(s["model"] == "rice_balanced") & (s["q_length"] == 72)]
-        new_chlamy_q72_row = s[(s["model"] == "chlamydomonas_balanced") & (s["q_length"] == 72)]
+        new_rice_q72_row = s[(s["model"] == "rice") & (s["q_length"] == 72)]
+        new_chlamy_q72_row = s[(s["model"] == "chlamydomonas") & (s["q_length"] == 72)]
         new_rice_q72 = new_rice_q72_row["mean_pll"].values[0] if not new_rice_q72_row.empty else float("nan")
         new_chlamy_q72 = new_chlamy_q72_row["mean_pll"].values[0] if not new_chlamy_q72_row.empty else float("nan")
 
-        rpt = f"""# ESM2 polyQ Log-Likelihood Analysis Report — Balanced Epochs
+        rpt = f"""# ESM2 polyQ Log-Likelihood Analysis Report — 3-Epoch Species-Adapted
 
 ## Contents
 
@@ -566,8 +566,8 @@ across **5 models** on polyQ=10–72 (63 sequences).
 | 1 | **Base** | — | — | — | Meta ESM2-t33-650M-UR50D |
 | 2 | **Merged** | 3-sp merged (281,521) | 3 | ~670K | Three-species merged MLM |
 | 3 | **Human** | human (224,457) | 3 | ~670K | Human-only proteome MLM |
-| 4 | **Rice (balanced)** | rice (41,787) | **16** | ~665K | Rice, epoch-upscaled |
-| 5 | **Chlamy (balanced)** | chlamy (15,277) | **44** | ~669K | Chlamy, epoch-upscaled |
+| 4 | **Rice** | rice (41,787) | 3 | ~125K | Rice proteome MLM |
+| 5 | **Chlamy** | chlamy (15,277) | 3 | ~46K | Chlamy proteome MLM |
 
 ### 1.2 Epoch Balancing Strategy
 
@@ -643,12 +643,12 @@ Q=72 ranking:
 ![Delta Detail](figures/fig01_delta_detail.png)
 
 All 4 fine-tuned models show maximum deviation from Base ESM2 in the
-Q≈20–32 range. This is consistent across both balanced and original 3-epoch training.
+Q≈20–32 range. This pattern is consistent across all species-adapted models.
 
-**Comparison with original 3-epoch results (Q=72)**:
+**Reproducibility check — Q=72 reference values**:
 
-| Model | Original (3ep) | Balanced | Change |
-|-------|---------------|----------|--------|
+| Model | Expected (3ep) | Observed | Δ |
+|-------|---------------|----------|-----|
 | Rice | {old_rice_q72_pll:.4f} | {new_rice_q72:.4f} | {new_rice_q72 - old_rice_q72_pll:+.4f} |
 | Chlamy | {old_chlamy_q72_pll:.4f} | {new_chlamy_q72:.4f} | {new_chlamy_q72 - old_chlamy_q72_pll:+.4f} |
 
@@ -713,13 +713,13 @@ All pairwise correlations > {min_r:.4f}.
 | LR | 5e-5, 6% warmup → linear decay, AdamW |
 | Precision | bfloat16 |
 
-### Per-Species Training — Balanced Epochs
+### Per-Species Training — 3-Epoch Species-Adapted
 
 | Species | Epochs | Steps | Training Samples |
 |---------|--------|-------|-----------------|
 | Human | 3 | 10,467 | ~670K |
-| Rice | **16** | ~10,400 | ~665K |
-| Chlamy | **44** | ~10,400 | ~669K |
+| Rice | 3 | ~7,800 | ~125K |
+| Chlamy | 3 | ~2,900 | ~46K |
 
 ## 6. Data File Inventory
 
@@ -734,7 +734,7 @@ All pairwise correlations > {min_r:.4f}.
 ---
 
 *Report generated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}*
-*Balanced Epochs Edition — Rice 16ep, Chlamy 44ep*
+*Species-Adapted Edition — All models 3 epochs*
 """
         with open(OUT / "analysis_report.md", "w", encoding="utf-8") as f:
             f.write(rpt)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot delta logP(ref) from Base — only Rice & Chlamy (balanced)."""
+"""Plot delta logP(ref) from Base — only Rice & Chlamy."""
 import argparse
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -24,10 +24,10 @@ def main():
     base = s[s["model"] == "base"]
     q_vals = base["q_length"].values
 
-    MODELS = ["rice_balanced", "chlamydomonas_balanced"]
-    COLORS = {"rice_balanced": "#1b9e77", "chlamydomonas_balanced": "#9467bd"}
-    LABELS = {"rice_balanced": "Rice (16 ep, balanced)",
-              "chlamydomonas_balanced": "Chlamy (44 ep, balanced)"}
+    MODELS = ["rice", "chlamydomonas"]
+    COLORS = {"rice": "#1b9e77", "chlamydomonas": "#9467bd"}
+    LABELS = {"rice": "Rice (3 ep)",
+              "chlamydomonas": "Chlamy (3 ep)"}
 
     fig, ax = plt.subplots(figsize=(11, 5.5))
 

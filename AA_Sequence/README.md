@@ -1,4 +1,4 @@
-# AA_Sequence — Species-Adapted polyQ Fitness Prediction (Balanced)
+# AA_Sequence — Species-Adapted polyQ Fitness Prediction
 
 Code and data for **species-adapted polyQ fitness scoring** using the ESM2-650M
 protein language model.
@@ -25,7 +25,7 @@ AA_Sequence/
 │   ├── training/                      # Proteome data for MLM fine-tuning
 │   ├── query/
 │   │   └── HTT_72Q.json              # HTT exon1 with 72Q query sequence
-│   └── results/                       # Balanced experiment results
+│   └── results/                       # Experiment results
 │       └── natural_pll/              # Natural protein baseline scores
 ├── scripts/                           # Training & inference scripts
 ├── analysis/                          # Downstream analysis & visualization
@@ -39,10 +39,10 @@ AA_Sequence/
 | 1 | **Base** | — (pretrained ESM2-650M) | — | — | Meta AI |
 | 2 | **Merged** | 3-species merged (281,521 seqs) | 3 | ~670K | Train yourself |
 | 3 | **Human** | Human proteome (224,457 seqs) | 3 | ~670K | Train yourself |
-| 4 | **Rice (balanced)** | Rice proteome (41,787 seqs) | 16 | ~665K | CladeTeam HF |
-| 5 | **Chlamy (balanced)** | Chlamy proteome (15,277 seqs) | 44 | ~669K | CladeTeam HF |
+| 4 | **Rice** | Rice proteome (41,787 seqs) | 3 | ~125K | CladeTeam HF |
+| 5 | **Chlamy** | Chlamy proteome (15,277 seqs) | 3 | ~46K | CladeTeam HF |
 
-Epochs for Rice and Chlamy are scaled to match ~670K total training samples.
+All species are trained for 3 epochs each (standard MLM fine-tuning).
 
 ---
 
@@ -56,8 +56,8 @@ models/
 ├── base/                          # facebook/esm2_t33_650M_UR50D
 ├── merged/                        # 3-species merged (train yourself)
 ├── human/                         # Human proteome (train yourself)
-├── rice_balanced/                 # CladeTeam/polyq-esm2-rice-balanced
-├── chlamydomonas_balanced/        # CladeTeam/polyq-esm2-chlamy-balanced
+├── rice/                          # CladeTeam/polyq-esm2-rice
+├── chlamydomonas/                 # CladeTeam/polyq-esm2-chlamy
 ```
 
 ### Step 1: Base ESM2-650M
@@ -79,14 +79,14 @@ by passing the model ID directly to the training script.
 Download from the CladeTeam collection on HuggingFace:
 
 ```bash
-# Rice (16-epoch balanced)
-huggingface-cli download CladeTeam/polyq-esm2-rice-balanced \
-    --local-dir models/rice_balanced \
+# Rice (3 epochs)
+huggingface-cli download CladeTeam/polyq-esm2-rice \
+    --local-dir models/rice \
     --local-dir-use-symlinks False
 
-# Chlamydomonas (44-epoch balanced)
-huggingface-cli download CladeTeam/polyq-esm2-chlamy-balanced \
-    --local-dir models/chlamydomonas_balanced \
+# Chlamydomonas (3 epochs)
+huggingface-cli download CladeTeam/polyq-esm2-chlamy \
+    --local-dir models/chlamydomonas \
     --local-dir-use-symlinks False
 ```
 
@@ -101,8 +101,8 @@ export MODEL_PATH="models/base"          # or "facebook/esm2_t33_650M_UR50D"
 export DATA_DIR="data/training"
 export OUTPUT_BASE="output_models"
 
-# Train all three species
-bash scripts/run_train_balanced.sh
+# Train all three species (3 epochs each)
+bash scripts/run_train.sh
 
 # Then symlink/copy into the shared model directory:
 ln -s "$(pwd)/output_models/esm2_human_final" models/human
@@ -110,13 +110,13 @@ ln -s "$(pwd)/output_models/esm2_merged_final" models/merged
 ```
 
 > **Note**: The polyQ scoring script gracefully skips missing models, so you can
-> run inference with only `base`, `rice_balanced`, and `chlamydomonas_balanced`.
+> run inference with only `base`, `rice`, and `chlamydomonas`.
 > Missing models are logged as warnings and excluded from the comparison.
 
 ### Step 4: Verify Layout
 
 ```bash
-for m in base merged human rice_balanced chlamydomonas_balanced; do
+for m in base merged human rice chlamydomonas; do
     if [ -d "models/${m}" ]; then
         echo "✓ models/${m}"
     else
@@ -142,7 +142,7 @@ pip install torch transformers accelerate pandas numpy scipy seaborn matplotlib
 export MODEL_PATH="facebook/esm2_t33_650M_UR50D"
 export DATA_DIR="data/training"
 export OUTPUT_BASE="output_models"
-bash scripts/run_train_balanced.sh
+bash scripts/run_train.sh
 ```
 
 ### Inference (1 GPU)

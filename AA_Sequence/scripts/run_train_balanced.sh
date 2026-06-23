@@ -1,19 +1,19 @@
 #!/bin/bash
 # =============================================================================
-# Balanced Per-Species ESM2 MLM Fine-tuning — 4-GPU DDP Launch Script
+# Per-Species ESM2 MLM Fine-tuning — 4-GPU DDP Launch Script
 # =============================================================================
-# Adjusts rice and chlamydomonas training epochs to compensate for data imbalance:
-#   - human:  224,457 seqs × 3 epochs  = ~670K samples (already trained, skip)
-#   - rice:    41,787 seqs × 16 epochs = ~665K samples (~ human)
-#   - chlamy:  15,277 seqs × 44 epochs = ~669K samples (~ human)
+# Fine-tunes ESM2-650M on individual species proteomes (3 epochs each):
+#   - human:  224,457 seqs × 3 epochs = ~670K samples
+#   - rice:    41,787 seqs × 3 epochs = ~125K samples
+#   - chlamy:  15,277 seqs × 3 epochs = ~46K samples
 #
 # Usage:
 #   MODEL_PATH=/path/to/esm2_t33_650M_UR50D \
 #   DATA_DIR=data/training \
 #   OUTPUT_BASE=/path/to/output_models \
-#   bash scripts/run_train_balanced.sh
+#   bash scripts/run_train.sh
 #
-#   nohup bash scripts/run_train_balanced.sh &> logs/train_balanced.log &
+#   nohup bash scripts/run_train.sh &> logs/train.log &
 # =============================================================================
 
 set -euo pipefail
@@ -38,22 +38,16 @@ OUTPUT_BASE="${OUTPUT_BASE:-output_models}"
 NUM_GPUS=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | wc -l || echo "4")
 
 # ── Per-species epoch config ─────────────────────────────────────────
-# human: not retrained (3 epochs, already exists)
-# rice: 16 epochs -> 41,578 × 16 ≈ 665K
-# chlamy: 44 epochs -> 15,201 × 44 ≈ 669K
+# All species: 3 epochs (standard fine-tuning)
 get_epochs() {
-    case "$1" in
-        rice)           echo 16 ;;
-        chlamydomonas)  echo 44 ;;
-        *)              echo 3 ;;
-    esac
+    echo 3
 }
 
-MODEL_SUFFIX="balanced"
+MODEL_SUFFIX=""
 
 {
 echo "================================================================"
-echo "Balanced Per-Species Training"
+echo "Per-Species Training (3 epochs each)"
 echo "================================================================"
 echo "Started: $(date)"
 echo "GPUs:    ${NUM_GPUS}"
@@ -62,10 +56,10 @@ echo "Model:   ${MODEL_PATH}"
 echo "Data:    ${DATA_DIR}"
 echo "Output:  ${OUTPUT_BASE}"
 echo ""
-echo "Epoch adjustment rationale:"
-echo "  human:       224,457 seqs × 3  epochs = ~670K samples (baseline)"
-echo "  rice:         41,787 seqs × 16 epochs = ~665K samples"
-echo "  chlamy:       15,277 seqs × 44 epochs = ~669K samples"
+echo "Training plan:"
+echo "  human:       224,457 seqs × 3 epochs = ~670K samples"
+echo "  rice:         41,787 seqs × 3 epochs = ~125K samples"
+echo "  chlamy:       15,277 seqs × 3 epochs = ~46K samples"
 echo ""
 
 echo "--- Env Check ---"
@@ -82,7 +76,7 @@ for sp in human rice chlamydomonas; do
     echo "  ${sp}: ${lines} raw sequences"
 done
 echo ""
-echo "Models will be saved to: ${OUTPUT_BASE}/esm2_{species}_${MODEL_SUFFIX}_final/"
+echo "Models will be saved to: ${OUTPUT_BASE}/esm2_{species}_final/"
 echo ""
 
 echo "Starting in 5s..."
@@ -117,17 +111,17 @@ for SPECIES in rice chlamydomonas; do
     fi
 
     echo "Finished: $(date)"
-    echo "Model saved: ${OUTPUT_BASE}/esm2_${SPECIES}_${MODEL_SUFFIX}_final/"
-    ls -lh "${OUTPUT_BASE}/esm2_${SPECIES}_${MODEL_SUFFIX}_final/" | head -10
+    echo "Model saved: ${OUTPUT_BASE}/esm2_${SPECIES}_final/"
+    ls -lh "${OUTPUT_BASE}/esm2_${SPECIES}_final/" | head -10
 done
 
 echo ""
 echo "================================================================"
-echo "ALL DONE — 2 balanced models trained"
+echo "ALL DONE — 2 species models trained"
 echo "================================================================"
 echo "Models:"
 for sp in rice chlamydomonas; do
-    echo "  ${OUTPUT_BASE}/esm2_${sp}_${MODEL_SUFFIX}_final/"
+    echo "  ${OUTPUT_BASE}/esm2_${sp}_final/"
 done
 echo "  (human: ${OUTPUT_BASE}/esm2_human_final/ — reused from previous 3-epoch training)"
 echo ""
